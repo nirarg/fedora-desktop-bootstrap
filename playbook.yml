@@ -1,0 +1,41 @@
+---
+- name: Configure Fedora Desktop Machine
+  hosts: all
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Upgrade all packages
+      become: true
+      package:
+        name: "*"
+        state: latest
+      register: result
+      retries: 5
+      until: result is success
+
+    - name: Install dnf packages
+      become: true
+      package:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - vim
+        - git
+        - make
+        - wget
+        - jq
+        - unzip
+        - go
+
+    - name: Install Source packages
+      become: true
+      ansible.builtin.shell:
+        cmd: "{{item}}"
+      with_items: "{{ source_packages }}"
+      when: source_packages is defined
+    
+    - name: Copy files from local to host
+      include_tasks: copy-tasks.yml
+      with_items: "{{ copy_files }}"
+      when: copy_files is defined

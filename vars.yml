@@ -1,0 +1,10 @@
+# source_packages:
+#   - "
+
+copy_files:
+  - src: "/home/nargaman/.aws/credentials"
+    dstPath: "~/.aws"
+    dstName: "credentials"
+  - src: "generate.vim"
+    dstPath: "~"
+    dstName: ".vimrc"
