@@ -1,0 +1,13 @@
+---
+- name: Create dst directory if doesn't exist
+  file:
+    path: "{{item.dstPath}}"
+    state: directory
+    mode: 0755
+    recurse: yes
+
+- name: Copy directory
+  copy:
+    src: "{{item.src}}"
+    dest: "{{item.dstPath}}/"
+    directory_mode:

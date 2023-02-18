@@ -5,6 +5,16 @@ copy_files:
   - src: "/home/nargaman/.aws/credentials"
     dstPath: "~/.aws"
     dstName: "credentials"
-  - src: "generate.vim"
+  - src: "~/.config/nvim/init.lua"
+    dstPath: "~/.config/nvim"
+    dstName: "init.lua"
+  - src: "~/.netrc"
     dstPath: "~"
-    dstName: ".vimrc"
+    dstName: ".netrc"
+  - src: "~/.gitconfig"
+    dstPath: "~"
+    dstName: ".gitconfig"
+
+copy_directories:
+  - src: "~/.config/nvim/lua"
+    dstPath: "~/.config/nvim"

@@ -14,19 +14,47 @@
       retries: 5
       until: result is success
 
+    - name: Set up Docker repository
+      shell: |
+        sudo dnf -y install dnf-plugins-core
+        sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+
     - name: Install dnf packages
       become: true
       package:
         name: "{{item}}"
         state: present
       with_items:
-        - vim
+        - neovim
         - git
         - make
         - wget
         - jq
         - unzip
         - go
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+    - name: Start and enable docker
+      shell: |
+        sudo systemctl start docker
+        sudo systemctl enable docker
+
+    - name: Install kubectl
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    - name: Append lines to .bashrc
+      lineinfile:
+        path: "~/.bashrc"
+        line: "{{item}}"
+      with_items:
+        - "alias vim=nvim"
+        - "alias vi=nvim"
 
     - name: Install Source packages
       become: true
@@ -36,6 +64,11 @@
       when: source_packages is defined
     
     - name: Copy files from local to host
-      include_tasks: copy-tasks.yml
+      include_tasks: copy-file-tasks.yml
       with_items: "{{ copy_files }}"
       when: copy_files is defined
+
+    - name: Copy directories from local to host
+      include_tasks: copy-directory-tasks.yml
+      with_items: "{{ copy_directories }}"
+      when: copy_directories is defined
